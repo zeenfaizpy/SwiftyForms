@@ -5,6 +5,13 @@ https://stackoverflow.com/questions/26804066/does-swift-have-class-level-static-
 https://stackoverflow.com/questions/33996864/override-static-var-in-a-child-class-swift
 */
 
+/*
+TODO:
+========
+Move all html string concatenation to templates and use any 
+template engine to render it. Eg: stencil
+*/
+
 class Widget {
     let name: String
     let value: String
