@@ -1,35 +1,45 @@
-protocol Contextable {
-    func get_context() -> [String: String]
-}
+/*
+Resources:
+==========
+https://stackoverflow.com/questions/26804066/does-swift-have-class-level-static-variables
+https://stackoverflow.com/questions/33996864/override-static-var-in-a-child-class-swift
+*/
 
-protocol Renderable {
-    func render_html(_ context: [String: String]) -> String
-    func render() -> String
-}
-
-struct Widget: Contextable, Renderable {
-    let is_required: Bool
+class Widget {
     let name: String
     let value: String
+    var attrs: [String: String]
+    let is_required: Bool
+    var type : String {
+        return ""
+    }
 
-    init(is_required: Bool = false, name: String, value: String){
-        self.is_required = is_required
+    init(name: String, value: String, attrs: [String: String], is_required: Bool = false){
         self.name = name
         self.value = value
+        self.attrs = attrs
+        self.is_required = is_required
     }
 
     func get_context() -> [String: String] {
-        let context = ["name": self.name, "value": self.value]
+        var context = ["name": self.name, "value": self.value]
+        // TODO: Find the better way to merge two dicts
+        for (key, value) in  self.attrs{
+            context[key] = value
+        }
         return context
     }
 
     func render_html(_ context: [String: String]) -> String {
-        var html = "<input type='text' name='\(context["name"]!)' value='\(context["value"]!)'"
-        if (is_required){
-            html += " required"
+        var html_str = "<input 'type'='\(self.type)' 'name'='\(self.name)' 'value'='\(self.value)' "
+        for (key, value) in self.attrs{
+             html_str += "'\(key)'='\(value)' "
         }
-        html += " />"
-        return html
+        if (is_required){
+            html_str += " required"
+        }
+        html_str += " />"
+        return html_str
     }
 
     func render() -> String {
@@ -39,5 +49,41 @@ struct Widget: Contextable, Renderable {
     }
 }
 
-var widget = Widget(is_required: true, name: "name", value: "faizal")
-print(widget.render())
+class TextInput: Widget {
+    override var type : String {
+        return "text"
+    }
+}
+
+class NumberInput: Widget {
+    override var type : String {
+        return "number"
+    }
+}
+
+class EmailInput: Widget {
+    override var type : String {
+        return "email"
+    }
+}
+
+class URLInput: Widget {
+    override var type : String {
+        return "url"
+    }
+}
+
+class HiddenInput: Widget {
+    override var type : String {
+        return "hidden"
+    }
+}
+
+class PasswordInput: Widget {
+    override var type : String {
+        return "password"
+    }
+}
+
+var number_input = NumberInput(name: "name", value: "faizal", attrs: ["data-key": "number", "class": "number_input"], is_required: true)
+print(number_input.render())
